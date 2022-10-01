@@ -1,0 +1,18 @@
+i ab
+f ccccc
+f r
+f zzz
+i v
+
+ab = 2
+ccccc = 4
+zzz = 10
+p ab
+p ccccc
+p zzz
+r = zzz - ccccc / ab
+p r
+v = zzz - r / ccccc
+p v
+v = 3 * 10 / ab
+p v
