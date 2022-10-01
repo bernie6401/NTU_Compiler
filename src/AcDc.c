@@ -53,6 +53,16 @@ int main( int argc, char *argv[] )
     return 0;
 }
 
+/********************************************* 
+  Self-Defined
+ *********************************************/
+void unget_token(FILE *source, Token token)
+{
+    int len_identifier = 0;
+    len_identifier = strlen(token.tok);
+    for( int j = len_identifier - 1; j > -1; j-- )  //e.g. identifier abc -> 1st. push back c then b then a finally
+        ungetc(token.tok[j], source);
+}
 
 /********************************************* 
   Scanning 
@@ -116,8 +126,8 @@ Token scanner( FILE *source )
             return getNumericToken(source, c);
 
         /* ------------To examine alphabet char token type------------ */
-        // token.tok[0] = c;
-        // token.tok[1] = '\0';
+        token.tok[0] = c;
+        token.tok[1] = '\0';
         if( islower(c) )    //to examine char c is lower case alphabet or nots
         {
             /*-----------------------Homework------------------------*/
@@ -192,7 +202,6 @@ Token scanner( FILE *source )
     return token;
 }
 
-
 /********************************************************
   Parsing - Objective: get the parse tree
  *********************************************************/
@@ -217,13 +226,12 @@ Declaration parseDeclaration( FILE *source, Token token )
     }
 }
 
-Declarations *parseDeclarations( FILE *source ) //need change
+Declarations *parseDeclarations( FILE *source )
 {
     Token token = scanner(source);  //每一次執行scanner，都會return一個token回來
     Declaration decl;
     Declarations *decls;
-    int len_identifier = 0;
-    // printf("%c", token.type);
+
     switch(token.type)
     {
         /* parse to Float or Integer means the current part is still in declaration part */
@@ -238,10 +246,7 @@ Declarations *parseDeclarations( FILE *source ) //need change
         case PrintOp:
         case Alphabet:
             //u must push the whole chars back to source by reverse order
-            len_identifier = strlen(token.tok);
-            
-            for( int j = len_identifier - 1; j > -1; j-- )  //e.g. identifier abc -> 1st. push back c then b then a finally
-                ungetc(token.tok[j], source);
+            unget_token(source, token);
             //ungetc(token.tok[0], source); -> this is not enough for multi-char identifier
             return NULL;
         case EOFsymbol:
@@ -252,9 +257,11 @@ Declarations *parseDeclarations( FILE *source ) //need change
     }
 }
 
-Expression *parseValue( FILE *source ) //need change
+/* In charge of getting the stmt value, return 
+(value->v).type / (value->v).val.id or ivalue or fvalue .*/
+Expression *parseValue( FILE *source ) //a little diff
 {
-    Token token = scanner(source);  //token == 1
+    Token token = scanner(source);
     Expression *value = (Expression *)malloc( sizeof(Expression) );
     value->leftOperand = value->rightOperand = NULL;
 
@@ -293,9 +300,60 @@ Expression *parseValue( FILE *source ) //need change
     return value;
 }
 
+/*-----------------------Homework------------------------*/
+/* In charge of analyze mul/div operator, return
+(expr->v).type / (expr->v).val.op / expr->leftOperand / expr->rightOperand .
+This block is aim to analyze what operator beside the operand.
+Why analyze mul/div op first u can refer to structure map in md file? 
+The answer is we want to calculate mul/div op first --> fundamental arithmetic */
+Expression *parseTermTail( FILE *source, Expression *lvalue )
+{
+    Token token = scanner(source);
+    Expression *expr;
+
+    switch(token.type)
+    {
+        case MulOp:
+            expr = (Expression *)malloc( sizeof(Expression) );
+            (expr->v).type = MulNode;
+            (expr->v).val.op = Mul;
+            expr->leftOperand = lvalue;
+            expr->rightOperand = parseValue(source);
+            return parseTermTail(source, expr);
+        case DivOp:
+            expr = (Expression *)malloc( sizeof(Expression) );
+            (expr->v).type = DivNode;
+            (expr->v).val.op = Div;
+            expr->leftOperand = lvalue;
+            expr->rightOperand = parseValue(source);
+            return parseTermTail(source, expr);
+        case PlusOp:
+        case MinusOp:
+        case Alphabet:
+        case PrintOp:
+            unget_token(source, token);
+            return lvalue;
+        case EOFsymbol:
+            return lvalue;
+        default:
+            printf("Syntax Error: Expect a numeric value or an identifier %s\n", token.tok);
+            exit(1);
+    }
+}
+
+Expression *parseTerm( FILE *source )
+{
+    Expression *expr = parseValue(source);
+    return parseTermTail(source, expr);
+}
+/*-----------------------Homework------------------------*/
+
+/* In charge of analyze plus/minus operator, return
+(expr->v).type / (expr->v).val.op / expr->leftOperand / expr->rightOperand .
+This block is aim to analyze what operator beside the operand. */
 Expression *parseExpressionTail( FILE *source, Expression *lvalue ) //need change
 {
-    Token token = scanner(source);  //token == p
+    Token token = scanner(source);
     Expression *expr;
 
     switch(token.type)
@@ -305,35 +363,24 @@ Expression *parseExpressionTail( FILE *source, Expression *lvalue ) //need chang
             (expr->v).type = PlusNode;
             (expr->v).val.op = Plus;
             expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
+            expr->rightOperand = parseTerm(source); //this is important, u must back to last level, not parseValue
             return parseExpressionTail(source, expr);
         case MinusOp:
             expr = (Expression *)malloc( sizeof(Expression) );
             (expr->v).type = MinusNode;
             (expr->v).val.op = Minus;
             expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
+            expr->rightOperand = parseTerm(source); //this is important, u must back to last level, not parseValue
             return parseExpressionTail(source, expr);
         /*-----------------------Homework------------------------*/
         case MulOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = MulNode;
-            (expr->v).val.op = Mul;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
         case DivOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = DivNode;
-            (expr->v).val.op = Div;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
-        /*-----------------------Homework------------------------*/
         case Alphabet:
         case PrintOp:
-            ungetc(token.tok[0], source);
+            unget_token(source, token);
+            //ungetc(token.tok[0], source);
             return lvalue;
+        /*-----------------------Homework------------------------*/
         case EOFsymbol:
             return lvalue;
         default:
@@ -342,64 +389,15 @@ Expression *parseExpressionTail( FILE *source, Expression *lvalue ) //need chang
     }
 }
 
-Expression *parseExpression( FILE *source, Expression *lvalue ) //need change
+/*-----------------------Homework------------------------*/
+Expression *parseExpression( FILE *source )
 {
-    Token token = scanner(source);  //token == '+'
-    Expression *expr;
-
-    int len_identifier = 0;
-
-    switch(token.type)
-    {
-        case PlusOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = PlusNode;
-            (expr->v).val.op = Plus;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
-        case MinusOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = MinusNode;
-            (expr->v).val.op = Minus;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
-        /*-----------------------Homework------------------------*/
-        case MulOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = MulNode;
-            (expr->v).val.op = Mul;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
-        case DivOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = DivNode;
-            (expr->v).val.op = Div;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
-        /*-----------------------Homework------------------------*/
-        case Alphabet:
-        case PrintOp:
-            /*-----------------------Homework------------------------*/
-            len_identifier = strlen(token.tok);
-            
-            for( int j = len_identifier - 1; j > -1; j-- )  //e.g. identifier abc -> 1st. push back c then b then a finally
-                ungetc(token.tok[j], source);//it means right side of assignment is not an expression, just a value
-            /*-----------------------Homework------------------------*/
-            // ungetc(token.tok[0], source);
-            return NULL;
-        case EOFsymbol:
-            return NULL;
-        default:
-            printf("Syntax Error: Expect a numeric value or an identifier %s\n", token.tok);
-            exit(1);
-    }
+    Expression *expr = parseTerm(source);
+    return parseExpressionTail(source, expr);
 }
+/*-----------------------Homework------------------------*/
 
-Statement parseStatement( FILE *source, Token token ) //need change
+Statement parseStatement( FILE *source, Token token )
 {
     Token next_token;
     Expression *value, *expr;
@@ -407,12 +405,13 @@ Statement parseStatement( FILE *source, Token token ) //need change
     switch(token.type)
     {
         case Alphabet:
-            next_token = scanner(source);   //next_token = '='
+            next_token = scanner(source);
             if(next_token.type == AssignmentOp)
             {
-                value = parseValue(source); //(value->v).type = FloatConst;(value->v).val.fvalue = atof(token.tok);
-                expr = parseExpression(source, value);  //expr == NULL
+                // value = parseValue(source); //(value->v).type = FloatConst;(value->v).val.fvalue = atof(token.tok);
+                // expr = parseExpression(source, value);  //expr == NULL
                 /*-----------------------Homework------------------------*/
+                Expression *expr = parseExpression(source);
                 for (int j = 0; j < 23; j++)
                 {
                     if (strcmp(Identifier_name[j].tok, token.tok) == 0)
@@ -428,9 +427,17 @@ Statement parseStatement( FILE *source, Token token ) //need change
                 exit(1);
             }
         case PrintOp:
-            next_token = scanner(source);   //next_token == 'c'
+            next_token = scanner(source);
             if(next_token.type == Alphabet)
-                return makePrintNode(next_token.tok[0]);
+            {
+                for (int i = 0; i < 23; i++)
+                {
+                    if (strcmp(Identifier_name[i].tok, next_token.tok) == 0)
+                    {
+                        return makePrintNode('a' + i);
+                    }
+                }
+            }
             else
             {
                 printf("Syntax Error: Expect an identifier %s\n", next_token.tok);
@@ -469,7 +476,7 @@ Statements *parseStatements( FILE * source )
 /*********************************************************************
   Build AST
  **********************************************************************/
-Declaration makeDeclarationNode( Token declare_type, Token identifier ) //need change
+Declaration makeDeclarationNode( Token declare_type, Token identifier ) //a little diff
 {
     //identifier is just variable name
     Declaration tree_node;
@@ -514,23 +521,25 @@ Declarations *makeDeclarationTree( Declaration decl, Declarations *decls )
     return new_tree;
 }
 
-Statement makeAssignmentNode( char id, Expression *v, Expression *expr_tail )
+Statement makeAssignmentNode( char id, Expression *v, Expression *expr_tail )   // need change
 {
     Statement stmt;
     AssignmentStatement assign;
 
     stmt.type = Assignment;
     assign.id = id;
-    if(expr_tail == NULL)
-        assign.expr = v;
-    else
-        assign.expr = expr_tail;
+    /*-----------------------Homework------------------------*/
+    // if(expr_tail == NULL)
+    //     assign.expr = v;
+    // else
+    assign.expr = expr_tail;
+    /*-----------------------Homework------------------------*/
     stmt.stmt.assign = assign;
 
     return stmt;
 }
 
-Statement makePrintNode( char id )
+Statement makePrintNode( char id )  //a little diff
 {
     Statement stmt;
     stmt.type = Print;
@@ -563,7 +572,7 @@ Program parser( FILE *source )
 /********************************************************
   Build symbol table
  *********************************************************/
-void InitializeTable( SymbolTable *table )
+void InitializeTable( SymbolTable *table )  //need change
 {
     int i;
 
@@ -571,7 +580,7 @@ void InitializeTable( SymbolTable *table )
         table->table[i] = Notype;
 }
 
-void add_table( SymbolTable *table, char c, DataType t )
+void add_table( SymbolTable *table, char c, DataType t )    //need change
 {
     int index = (int)(c - 'a');
 
@@ -603,7 +612,7 @@ SymbolTable build( Program program )
   Type checking
  *********************************************************************/
 
-void convertType( Expression * old, DataType type ) //need change
+void convertType( Expression * old, DataType type )
 {
     if(old->type == Float && type == Int)
     {
@@ -643,7 +652,7 @@ DataType generalize( Expression *left, Expression *right )
     return Int;
 }
 
-DataType lookup_table( SymbolTable *table, char c )
+DataType lookup_table( SymbolTable *table, char c ) //need change
 {
     int id = c-'a';
     if( table->table[id] != Int && table->table[id] != Float)
@@ -651,7 +660,7 @@ DataType lookup_table( SymbolTable *table, char c )
     return table->table[id];
 }
 
-void checkexpression( Expression * expr, SymbolTable * table )
+void checkexpression( Expression * expr, SymbolTable * table )  //need change
 {
     char c;
     if(expr->leftOperand == NULL && expr->rightOperand == NULL)
@@ -726,7 +735,7 @@ void check( Program *program, SymbolTable * table )
 /***********************************************************************
   Code generation
  ************************************************************************/
-void fprint_op( FILE *target, ValueType op ) //need change
+void fprint_op( FILE *target, ValueType op )
 {
     switch(op){
         case MinusNode:
