@@ -18,8 +18,8 @@ int main( int argc, char *argv[] )
     Program program;
     SymbolTable symtab;
 
-    source = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/test/constfold.ac", "r");//Reference-AcDc/
-    target = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/src/output1", "w");
+    source = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/test/constfold.ac", "r");//Reference-AcDc/
+    target = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/src/output1", "w");
 
     // if( argc == 3)
     // {
