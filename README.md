@@ -15,3 +15,7 @@
 	* You can check [constfold testbench](/test/constfold.ac)
 * It can not recognize identifier name with numbers. You can check [longname.ac](/test/longname.ac)
 * The other testbenchs can compile from Ac language to Dc language correctly.
+
+## Reference
+* [AcDc](https://github.com/jaidTw/AcDc)
+* [AcDcCompiler](https://github.com/ZephyrZhuQi/AcDcCompiler)
