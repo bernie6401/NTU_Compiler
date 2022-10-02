@@ -18,37 +18,36 @@ int main( int argc, char *argv[] )
     Program program;
     SymbolTable symtab;
 
-    source = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/test/constfold.ac", "r");//Reference-AcDc/
-    target = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/src/output1", "w");
+    // source = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/test/constfold.ac", "r");
+    // target = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/src/output1", "w");
 
-    // if( argc == 3)
-    // {
-    //     source = fopen(argv[1], "r");
-    //     target = fopen(argv[2], "w");
-    //     if( !source )
-    //     {
-    //         printf("can't open the source file\n");
-    //         exit(2);
-    //     }
-    //     else if( !target )
-    //     {
-    //         printf("can't open the target file\n");
-    //         exit(2);
-    //     }
-    //     else
-    //     {
+    if( argc == 3)
+    {
+        source = fopen(argv[1], "r");
+        target = fopen(argv[2], "w");
+        if( !source )
+        {
+            printf("can't open the source file\n");
+            exit(2);
+        }
+        else if( !target )
+        {
+            printf("can't open the target file\n");
+            exit(2);
+        }
+        else
+        {
             program = parser(source);
             fclose(source);
             symtab = build(program);
             check(&program, &symtab);
             gencode(program, target);
-    //     }
-    // }
-    // else
-    // {
-    //     printf("Usage: %s source_file target_file\n", argv[0]);
-    // }
-
+        }
+    }
+    else
+    {
+        printf("Usage: %s source_file target_file\n", argv[0]);
+    }
 
     return 0;
 }
@@ -315,7 +314,7 @@ Declaration parseDeclaration( FILE *source, Token token )
 
 Declarations *parseDeclarations( FILE *source )
 {
-    Token token = scanner(source);  //每一次執行scanner，都會return一個token回來
+    Token token = scanner(source);  //execute scanner everytime，it'll return a token back
     Declaration decl;
     Declarations *decls;
 
@@ -438,7 +437,7 @@ Expression *parseTerm( FILE *source )
 /* In charge of analyze plus/minus operator, return
 (expr->v).type / (expr->v).val.op / expr->leftOperand / expr->rightOperand .
 This block is aim to analyze what operator beside the operand. */
-Expression *parseExpressionTail( FILE *source, Expression *lvalue ) //need change
+Expression *parseExpressionTail( FILE *source, Expression *lvalue )
 {
     Token token = scanner(source);
     Expression *expr;
@@ -540,7 +539,7 @@ Statement parseStatement( FILE *source, Token token )
 Statements *parseStatements( FILE * source )
 {
 
-    Token token = scanner(source);   //token == zzz
+    Token token = scanner(source);
     Statement stmt;
     Statements *stmts;
 
@@ -608,7 +607,7 @@ Declarations *makeDeclarationTree( Declaration decl, Declarations *decls )
     return new_tree;
 }
 
-Statement makeAssignmentNode( char id, Expression *v, Expression *expr_tail )   // need change
+Statement makeAssignmentNode( char id, Expression *v, Expression *expr_tail )
 {
     Statement stmt;
     AssignmentStatement assign;
@@ -648,7 +647,7 @@ Statements *makeStatementTree( Statement stmt, Statements *stmts )
 Program parser( FILE *source )
 {
     Program program;
-    //In the program, we can split it two parts which are declarations(宣告) and statements(陳述)
+    //In the program, we can split it two parts which are declarations and statements
     program.declarations = parseDeclarations(source);
     program.statements = parseStatements(source);
 
@@ -659,7 +658,7 @@ Program parser( FILE *source )
 /********************************************************
   Build symbol table
  *********************************************************/
-void InitializeTable( SymbolTable *table )  //need change
+void InitializeTable( SymbolTable *table )
 {
     int i;
 
@@ -667,7 +666,7 @@ void InitializeTable( SymbolTable *table )  //need change
         table->table[i] = Notype;
 }
 
-void add_table( SymbolTable *table, char c, DataType t )    //need change
+void add_table( SymbolTable *table, char c, DataType t )
 {
     int index = (int)(c - 'a');
 
@@ -739,7 +738,7 @@ DataType generalize( Expression *left, Expression *right )
     return Int;
 }
 
-DataType lookup_table( SymbolTable *table, char c ) //need change
+DataType lookup_table( SymbolTable *table, char c )
 {
     int id = c-'a';
     if( table->table[id] != Int && table->table[id] != Float)
@@ -747,7 +746,7 @@ DataType lookup_table( SymbolTable *table, char c ) //need change
     return table->table[id];
 }
 
-void checkexpression( Expression * expr, SymbolTable * table )  //need change
+void checkexpression( Expression * expr, SymbolTable * table )
 {
     char c;
     if(expr->leftOperand == NULL && expr->rightOperand == NULL)
@@ -847,7 +846,7 @@ void fprint_op( FILE *target, ValueType op )
     }
 }
 
-void fprint_expr( FILE *target, Expression *expr) //need change
+void fprint_expr( FILE *target, Expression *expr)
 {
     if(expr->leftOperand == NULL)
     {
