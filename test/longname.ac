@@ -1,0 +1,15 @@
+i aislong123
+f bisveryverylong666
+i fffff
+i d
+aislong123 = 1
+p aislong123
+bisveryverylong666 = 2.1
+p bisveryverylong666
+fffff = 1
+p fffff
+d = 2
+fffff = aislong123 + d
+p fffff
+p d
+

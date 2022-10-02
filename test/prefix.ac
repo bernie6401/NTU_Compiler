@@ -1,0 +1,16 @@
+f a
+i aa
+f aaa
+f gogo
+f gogo_powerranger
+
+a = 2.5
+aa = 3
+aaa = 5.5 * 10 + a * aa
+gogo = aaa
+gogo_powerranger = gogo + 3
+
+p a
+p aa
+p aaa
+p gogo_powerranger
