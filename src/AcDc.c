@@ -18,8 +18,8 @@ int main( int argc, char *argv[] )
     Program program;
     SymbolTable symtab;
 
-    source = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/test/sample1.ac", "r");
-    target = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/project1/src/output1", "w");
+    source = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/test/constfold.ac", "r");//Reference-AcDc/
+    target = fopen("/home/sbk/NTU/Compiler Technology of Programming Language/NTU_Compiler/src/output1", "w");
 
     // if( argc == 3)
     // {
@@ -62,6 +62,93 @@ void unget_token(FILE *source, Token token)
     len_identifier = strlen(token.tok);
     for( int j = len_identifier - 1; j > -1; j-- )  //e.g. identifier abc -> 1st. push back c then b then a finally
         ungetc(token.tok[j], source);
+}
+
+void ConstFold( Expression *expr )
+{
+    Expression *left = expr->leftOperand;
+    Expression *right = expr->rightOperand;
+    if((left->v).type == IntConst && (right->v).type == IntConst)
+    {
+        //e.g. i 3 * i 10
+        int lvalue = (left->v).val.ivalue;
+        int rvalue = (right->v).val.ivalue;
+
+        switch((expr->v).type)
+        {
+            case PlusNode:
+                (expr->v).val.ivalue = lvalue + rvalue; break;
+            case MinusNode:
+                (expr->v).val.ivalue = lvalue - rvalue; break;
+            case MulNode:
+                (expr->v).val.ivalue = lvalue * rvalue; break;
+            case DivNode:
+                (expr->v).val.ivalue = lvalue / rvalue; break;
+        }
+        (expr->v).type = IntConst;
+        expr->leftOperand = expr->rightOperand = NULL;
+    }
+    else if((left->v).type == FloatConst && (right->v).type == IntToFloatConvertNode && (right->leftOperand->v).type == IntConst)
+    {
+        //add "(right->leftOperand->v).type == IntConst" in if-stmt to avoid (35 + identifier) this kind of expr access into if-stmt
+        //e.g. f 3.5 * i 10
+        float lvalue = (left->v).val.fvalue;
+        int rvalue = (right->leftOperand->v).val.ivalue;
+
+        switch((expr->v).type)
+        {
+            case PlusNode:
+                (expr->v).val.fvalue = lvalue + rvalue; break;
+            case MinusNode:
+                (expr->v).val.fvalue = lvalue - rvalue; break;
+            case MulNode:
+                (expr->v).val.fvalue = lvalue * rvalue; break;
+            case DivNode:
+                (expr->v).val.fvalue = lvalue / rvalue; break;
+        }
+        (expr->v).type = FloatConst;
+        expr->leftOperand = expr->rightOperand = NULL;
+    }
+    else if((left->v).type == IntToFloatConvertNode && (right->v).type == FloatConst && (left->leftOperand->v).type == IntConst)
+    {
+        //e.g. i 3 * f 10.5
+        int lvalue = (left->leftOperand->v).val.ivalue;    //must revise
+        float rvalue = (right->v).val.fvalue;
+
+        switch((expr->v).type)
+        {
+            case PlusNode:
+                (expr->v).val.fvalue = lvalue + rvalue; break;
+            case MinusNode:
+                (expr->v).val.fvalue = lvalue - rvalue; break;
+            case MulNode:
+                (expr->v).val.fvalue = lvalue * rvalue; break;
+            case DivNode:
+                (expr->v).val.fvalue = lvalue / rvalue; break;
+        }
+        (expr->v).type = FloatConst;
+        expr->leftOperand = expr->rightOperand = NULL;
+    }
+    else if((left->v).type == FloatConst && (right->v).type == FloatConst)
+    {
+        //e.g. f 3.5 * f 10.5
+        float lvalue = (left->v).val.fvalue;
+        float rvalue = (right->v).val.fvalue;
+
+        switch((expr->v).type)
+        {
+            case PlusNode:
+                (expr->v).val.fvalue = lvalue + rvalue; break;
+            case MinusNode:
+                (expr->v).val.fvalue = lvalue - rvalue; break;
+            case MulNode:
+                (expr->v).val.fvalue = lvalue * rvalue; break;
+            case DivNode:
+                (expr->v).val.fvalue = lvalue / rvalue; break;
+        }
+        (expr->v).type = FloatConst;
+        expr->leftOperand = expr->rightOperand = NULL;
+    }
 }
 
 /********************************************* 
@@ -693,10 +780,12 @@ void checkexpression( Expression * expr, SymbolTable * table )  //need change
         checkexpression(left, table);
         checkexpression(right, table);
 
-        DataType type = generalize(left, right);
-        convertType(left, type);//left->type = type;//converto
-        convertType(right, type);//right->type = type;//converto
+        DataType type = generalize(left, right);    // determine a data type
+        convertType(left, type);
+        convertType(right, type);
         expr->type = type;
+
+        ConstFold( expr );
     }
 }
 
