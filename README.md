@@ -12,4 +12,6 @@
 ## Something need to know first
 * It can not recognize the bottom line as identifier name.
 * It can not print negative value like $1-2=-1$ expression. Actually speaking, it can calculate correctly but it can not print it out.(I'll check it out later.)
-* It can not recognize identifier name with numbers
+	* You can check [constfold testbench](/test/constfold.ac)
+* It can not recognize identifier name with numbers. You can check [longname.ac](/test/longname.ac)
+* The other testbenchs can compile from Ac language to Dc language correctly.
