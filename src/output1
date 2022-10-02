@@ -1,44 +1,37 @@
-2
-sa
-0 k
-4
-5k
-sb
-0 k
-10
-5k
+-1
 sd
 0 k
-la
-p
-lb
-p
 ld
 p
-ld
+0.400000
+sb
+0 k
 lb
+p
+28.000000
+sa
+0 k
 la
-5k
-/
--
+p
+la
+lb
++
 sc
 0 k
 lc
 p
+2.000000
 ld
-lc
-lb
-/
--
+5k
++
 se
 0 k
 le
 p
-3
-10
-*
-la
-/
+ld
+5k
+2.000000
++
 se
 0 k
 le

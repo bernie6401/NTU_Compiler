@@ -5,14 +5,7 @@ f zzz
 i v
 
 ab = 2
-ccccc = 4
-zzz = 10
-p ab
-p ccccc
+zzz = 1 - ab
 p zzz
-r = zzz - ccccc / ab
-p r
-v = zzz - r / ccccc
-p v
-v = 3 * 10 / ab
+v = 3.5 * 10 / ab
 p v
