@@ -11,7 +11,7 @@
 	* For instance: `$ ./AcDc ../test/sample1.ac ./output`
 ## Something need to know first
 * It can not recognize the bottom line as identifier name.
-* It can not print negative value like 1-2=-1 expression. Actually speaking, it can calculate correctly but it can not print it out.(I'll check it out later.)
+* It can not print negative value like $1-2=-1$ expression. Actually speaking, it can calculate correctly but it can not print it out.(I'll check it out later.)
 	* You can check [constfold testbench](/test/constfold.ac)
 	* Solution and Why: In Dc Language, the bottom line represent negative symbol. You can not just use minus as negative symbol, replace it by bottom line instead.
 * It can not recognize identifier name with numbers. You can check [longname.ac](/test/longname.ac)
