@@ -1,20 +1,51 @@
 %option noyywrap 
 %{
-   #include <stdio.h>
-   #include "header.h" 
-   int linenumber;
-   symtab * lookup();
-   symtab * ptr;
-   void     insertID();
-   void 	   printSymTab();
-   /* You need to define for all tokens in C--, here are some examples */
-   #define INT          10
-   #define FLOAT        11
-   #define OP_ASSIGN 	12
-   #define OP_OR        13
-   #define MK_LPAREN 	14
-   #define MK_RPAREN 	15
-   #define ERROR        100
+#include <stdio.h>
+#include "header.h" 
+int linenumber;
+symtab * lookup();
+symtab * ptr;
+void     insertID();
+void 	   printSymTab();
+/* You need to define for all tokens in C--, here are some examples */
+/* Reserved Words */
+#define RETURN
+#define TYPEDEF
+#define IF
+#define ELSE
+#define INT          10
+#define FLOAT        11
+#define FOR
+#define VOID
+#define WHILE
+
+/* Symbols and operators */
+#define OP_PLUS     
+#define OP_MINUS    
+#define OP_MUL      
+#define OP_DIV      
+#define OP_LESS     
+#define OP_GREAT    
+#define OP_GREAT_EQ 
+#define OP_LESS_EQ  
+#define OP_UN_EQ    
+#define OP_EQ       
+#define OP_OR        13
+#define OP_AND      
+#define OP_NOT
+#define OP_ASSIGN 	12
+
+/* Separators */
+#define MK_lbrace   
+#define MK_rbrace   
+#define MK_rbracket 
+#define MK_lbracket 
+#define MK_LPAREN 	14
+#define MK_RPAREN 	15
+#define MK_semicol  
+#define MK_comma    
+#define MK_dot      
+#define ERROR        100
 %}
 
 /* All regular expression appear here */
@@ -111,7 +142,8 @@ error    .
 
 int main(int argc, char **argv)
 {
- argc--; ++argv;
+   argc--;
+   ++argv;
    if (argc > 0)
       yyin = fopen(argv[0], "r");
    else

@@ -466,21 +466,21 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "lexer.l"
 #line 3 "lexer.l"
-   #include <stdio.h>
-   #include "header.h" 
-   int linenumber;
-   symtab * lookup();
-   symtab * ptr;
-   void     insertID();
-   void 	   printSymTab();
-   /* You need to define for all tokens in C--, here are some examples */
-   #define INT          10
-   #define FLOAT        11
-   #define OP_ASSIGN 	12
-   #define OP_OR        13
-   #define MK_LPAREN 	14
-   #define MK_RPAREN 	15
-   #define ERROR        100
+#include <stdio.h>
+#include "header.h" 
+int linenumber;
+symtab * lookup();
+symtab * ptr;
+void     insertID();
+void 	   printSymTab();
+/* You need to define for all tokens in C--, here are some examples */
+#define INT          10
+#define FLOAT        11
+#define OP_ASSIGN 	12
+#define OP_OR        13
+#define MK_LPAREN 	14
+#define MK_RPAREN 	15
+#define ERROR        100
 #line 485 "lex.yy.c"
 /* All regular expression appear here */
 /* You need to define the following RE's */
@@ -1929,11 +1929,14 @@ void yyfree (void * ptr )
 
 int main(int argc, char **argv)
 {
- argc--; ++argv;
-   if (argc > 0)
-      yyin = fopen(argv[0], "r");
-   else
-      yyin = stdin;
-   yylex();
-   printSymTab();
+	argc--;
+	++argv;
+	argc = 1;
+	argv[0] = "../test/sample.ac";
+	if (argc > 0)
+		yyin = fopen(argv[0], "r");
+	else
+		yyin = stdin;
+	yylex();
+	printSymTab();
 }

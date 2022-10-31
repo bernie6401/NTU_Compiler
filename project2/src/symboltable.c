@@ -10,9 +10,11 @@
 symtab * hash_table[TABLE_SIZE];
 extern int linenumber;
 
-int HASH(char * str){
+int HASH(char * str)
+{
 	int idx=0;
-	while(*str){
+	while(*str)
+	{
 		idx = idx << 1;
 		idx+=*str;
 		str++;
@@ -22,7 +24,8 @@ int HASH(char * str){
 
 /*returns the symbol table entry if found else NULL*/
 
-symtab * lookup(char *name){
+symtab * lookup(char *name)
+{
 	int hash_key;
 	symtab* symptr;
 	if(!name)
@@ -30,7 +33,8 @@ symtab * lookup(char *name){
 	hash_key=HASH(name);
 	symptr=hash_table[hash_key];
 
-	while(symptr){
+	while(symptr)
+	{
 		if(!(strcmp(name,symptr->lexeme)))
 			return symptr;
 		symptr=symptr->front;
@@ -39,7 +43,8 @@ symtab * lookup(char *name){
 }
 
 
-void insertID(char *name){
+void insertID(char *name)
+{
 	int hash_key;
 	symtab* ptr;
 	symtab* symptr=(symtab*)malloc(sizeof(symtab));	
@@ -47,13 +52,15 @@ void insertID(char *name){
 	hash_key=HASH(name);
 	ptr=hash_table[hash_key];
 	
-	if(ptr==NULL){
+	if(ptr==NULL)
+	{
 		/*first entry for this hash_key*/
 		hash_table[hash_key]=symptr;
 		symptr->front=NULL;
 		symptr->back=symptr;
 	}
-	else{
+	else
+	{
 		symptr->front=ptr;
 		ptr->back=symptr;
 		symptr->back=symptr;
@@ -67,8 +74,8 @@ void insertID(char *name){
 
 void printSym(symtab* ptr) 
 {
-	    printf(" Name = %s \n", ptr->lexeme);
-	    printf(" References = %d \n", ptr->counter);
+	printf(" Name = %s \n", ptr->lexeme);
+	printf(" References = %d \n", ptr->counter);
 }
 
 void printSymTab()
@@ -78,12 +85,12 @@ void printSymTab()
     for (i=0; i<TABLE_SIZE; i++)
     {
         symtab* symptr;
-	symptr = hash_table[i];
-	while (symptr != NULL)
-	{
-            printf("====>  index = %d \n", i);
-	    printSym(symptr);
-	    symptr=symptr->front;
-	}
+		symptr = hash_table[i];
+		while (symptr != NULL)
+		{
+			printf("====>  index = %d \n", i);
+			printSym(symptr);
+			symptr=symptr->front;
+		}
     }
 }
