@@ -1931,8 +1931,6 @@ int main(int argc, char **argv)
 {
 	argc--;
 	++argv;
-	argc = 1;
-	argv[0] = "../test/sample.ac";
 	if (argc > 0)
 		yyin = fopen(argv[0], "r");
 	else
