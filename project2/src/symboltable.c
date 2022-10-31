@@ -76,26 +76,54 @@ void printSym(symtab* ptr)
 {
 	// printf(" Name = %s \n", ptr->lexeme);
 	// printf(" References = %d \n", ptr->counter);
-	printf("%s %d \n", ptr->lexeme, ptr->counter);
+	printf("%s\t\t%d \n", ptr->lexeme, ptr->counter);
+
 }
 
 void printSymTab()
 {
-    int i;
-    printf("----- Symbol Table ---------\n");
+    int i, j = 0;
+	int insert_case, insert_position;
+    printf("Frequency of identifiers:\n");
     for (i=0; i<TABLE_SIZE; i++)
     {
         symtab* symptr;
 		symptr = hash_table[i];
 		while (symptr != NULL)
 		{
-			// printf("====>  index = %d \n", i);
-			printSym(symptr);
+			symptr=symptr->front;
+			j++;
+		}
+    }
+	symtab * temp_hash_table[j];
+	j = -1;
+	for (i=0; i<TABLE_SIZE; i++)
+    {
+        symtab* symptr;
+		symptr = hash_table[i];
+		while (symptr != NULL)
+		{
+			j++;
+			temp_hash_table[j] = symptr;
 			symptr=symptr->front;
 		}
     }
-	// for (i=0; i<TABLE_SIZE; i++)
-    // {
 
-	// }
+	// Insertion sorting
+	symtab* key;
+	for (j = 1; j<sizeof(temp_hash_table)/8; j++)
+	{
+		key = temp_hash_table[j];
+		i = j - 1;
+		while((i > -1) && (strcmp(temp_hash_table[i]->lexeme, key->lexeme) > 0))
+		{
+			temp_hash_table[i+1] = temp_hash_table[i];
+			i--;
+		}
+		temp_hash_table[i+1] = key;
+	}
+	
+	// Print the result after sorting
+	for(i = 0; i<sizeof(temp_hash_table)/8; i++)
+		printSym(temp_hash_table[i]);
 }

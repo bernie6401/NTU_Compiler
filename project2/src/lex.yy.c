@@ -566,8 +566,9 @@ void 	   printSymTab();
 #define MK_semicol   29
 #define MK_comma     30
 #define MK_dot       31
+#define WHITE        47
 #define ERROR        100
-#line 571 "lex.yy.c"
+#line 572 "lex.yy.c"
 /* All regular expression appear here */
 /* Reserved Words */
 /* All operators appear here */
@@ -576,7 +577,7 @@ void 	   printSymTab();
 /* Logical operators */
 /* Assignmet operators */
 /* All separators appear here */
-#line 580 "lex.yy.c"
+#line 581 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -793,10 +794,10 @@ YY_DECL
 		}
 
 	{
-#line 122 "lexer.l"
+#line 123 "lexer.l"
 
 
-#line 800 "lex.yy.c"
+#line 801 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -855,57 +856,57 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 124 "lexer.l"
-{}
+#line 125 "lexer.l"
+{/*printf("this is white space\n");return WHITE;*/}
 	YY_BREAK
 case 2:
-YY_RULE_SETUP
-#line 125 "lexer.l"
-
-	YY_BREAK
-case 3:
 YY_RULE_SETUP
 #line 126 "lexer.l"
 
 	YY_BREAK
-case 4:
+case 3:
 YY_RULE_SETUP
 #line 127 "lexer.l"
 
 	YY_BREAK
-case 5:
+case 4:
 YY_RULE_SETUP
 #line 128 "lexer.l"
 
 	YY_BREAK
-case 6:
+case 5:
 YY_RULE_SETUP
 #line 129 "lexer.l"
 
 	YY_BREAK
-case 7:
+case 6:
 YY_RULE_SETUP
 #line 130 "lexer.l"
 
 	YY_BREAK
-case 8:
+case 7:
 YY_RULE_SETUP
 #line 131 "lexer.l"
 
 	YY_BREAK
-case 9:
+case 8:
 YY_RULE_SETUP
 #line 132 "lexer.l"
 
 	YY_BREAK
-case 10:
+case 9:
 YY_RULE_SETUP
 #line 133 "lexer.l"
 
 	YY_BREAK
-case 11:
+case 10:
 YY_RULE_SETUP
 #line 134 "lexer.l"
+
+	YY_BREAK
+case 11:
+YY_RULE_SETUP
+#line 135 "lexer.l"
 {
                      ptr = lookup(yytext);
                      if (ptr == NULL)
@@ -916,38 +917,38 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 141 "lexer.l"
-
+#line 142 "lexer.l"
+{/*return INT_CONSTANT;*/}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 142 "lexer.l"
-
+#line 143 "lexer.l"
+{/*printf("float: %s\n", yytext);*/}
 	YY_BREAK
 case 14:
-YY_RULE_SETUP
-#line 143 "lexer.l"
-
-	YY_BREAK
-case 15:
 YY_RULE_SETUP
 #line 144 "lexer.l"
 
 	YY_BREAK
-case 16:
+case 15:
 YY_RULE_SETUP
 #line 145 "lexer.l"
-ECHO;
+
+	YY_BREAK
+case 16:
+YY_RULE_SETUP
+#line 146 "lexer.l"
+
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 146 "lexer.l"
+#line 147 "lexer.l"
 ECHO;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 147 "lexer.l"
+#line 148 "lexer.l"
 {
                      char c;
                      int done = FALSE;
@@ -974,141 +975,141 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 173 "lexer.l"
+#line 174 "lexer.l"
 
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 174 "lexer.l"
+#line 175 "lexer.l"
 
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 175 "lexer.l"
+#line 176 "lexer.l"
 
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 176 "lexer.l"
+#line 177 "lexer.l"
 
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 177 "lexer.l"
+#line 178 "lexer.l"
 
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 178 "lexer.l"
+#line 179 "lexer.l"
 
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 179 "lexer.l"
+#line 180 "lexer.l"
 
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 180 "lexer.l"
+#line 181 "lexer.l"
 
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 181 "lexer.l"
+#line 182 "lexer.l"
 
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 182 "lexer.l"
+#line 183 "lexer.l"
 
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 183 "lexer.l"
+#line 184 "lexer.l"
 
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 184 "lexer.l"
+#line 185 "lexer.l"
 
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 185 "lexer.l"
+#line 186 "lexer.l"
 
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 186 "lexer.l"
+#line 187 "lexer.l"
 
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 189 "lexer.l"
+#line 190 "lexer.l"
 
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 190 "lexer.l"
+#line 191 "lexer.l"
 
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 191 "lexer.l"
+#line 192 "lexer.l"
 
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 192 "lexer.l"
+#line 193 "lexer.l"
 
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 193 "lexer.l"
+#line 194 "lexer.l"
 
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 194 "lexer.l"
+#line 195 "lexer.l"
 
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 195 "lexer.l"
+#line 196 "lexer.l"
 
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 196 "lexer.l"
+#line 197 "lexer.l"
 
 	YY_BREAK
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-#line 197 "lexer.l"
+#line 198 "lexer.l"
 linenumber += 1;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 198 "lexer.l"
+#line 199 "lexer.l"
 
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 199 "lexer.l"
+#line 200 "lexer.l"
 
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 200 "lexer.l"
+#line 201 "lexer.l"
 printf("ERR \n");/* return ERROR; */
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 203 "lexer.l"
+#line 204 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1112 "lex.yy.c"
+#line 1113 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2113,7 +2114,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 203 "lexer.l"
+#line 204 "lexer.l"
 
 
 int main(int argc, char **argv)

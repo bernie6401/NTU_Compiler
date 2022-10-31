@@ -55,6 +55,7 @@ void 	   printSymTab();
 #define MK_semicol   29
 #define MK_comma     30
 #define MK_dot       31
+#define WHITE        47
 #define ERROR        100
 %}
 
@@ -121,7 +122,7 @@ error    .
 
 %%
 
-{WS}              {}
+{WS}              {/*printf("this is white space\n");return WHITE;*/}
 {RWInt}           
 {RWFloat}         
 {RWRturn}         
@@ -138,11 +139,11 @@ error    .
                      else 
                         ptr->counter++;
                   }
-{Int_constant}    
-{Float_constant}  
+{Int_constant}    {/*return INT_CONSTANT;*/}
+{Float_constant}  {/*printf("float: %s\n", yytext);*/}
 {DL_l2quotes}     
 {DL_r2quotes}     
-{String_constant} ECHO;
+{String_constant} 
 {line_comment}    ECHO;
 {block_comment}   {
                      char c;
