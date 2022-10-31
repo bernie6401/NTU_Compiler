@@ -74,8 +74,9 @@ void insertID(char *name)
 
 void printSym(symtab* ptr) 
 {
-	printf(" Name = %s \n", ptr->lexeme);
-	printf(" References = %d \n", ptr->counter);
+	// printf(" Name = %s \n", ptr->lexeme);
+	// printf(" References = %d \n", ptr->counter);
+	printf("%s %d \n", ptr->lexeme, ptr->counter);
 }
 
 void printSymTab()
@@ -88,9 +89,13 @@ void printSymTab()
 		symptr = hash_table[i];
 		while (symptr != NULL)
 		{
-			printf("====>  index = %d \n", i);
+			// printf("====>  index = %d \n", i);
 			printSym(symptr);
 			symptr=symptr->front;
 		}
     }
+	// for (i=0; i<TABLE_SIZE; i++)
+    // {
+
+	// }
 }
