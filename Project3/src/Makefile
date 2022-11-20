@@ -25,5 +25,5 @@ functions.o: functions.c
 	$(CC) -c functions.c
 
 clean:
-	rm -f $(TARGET) $(OBJECT) 
+	rm -f $(OBJECT) 
 

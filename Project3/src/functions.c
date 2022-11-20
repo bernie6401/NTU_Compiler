@@ -150,7 +150,7 @@ char *printLabelString(FILE *fp, AST_NODE *astNode)
 void printGV(AST_NODE *root, char* fileName)
 {
     if (fileName == NULL) {
-        fileName = "AST_Graph.gv";
+        fileName = "../test/AST_Graph.gv";
     }
     FILE *fp;
     fp = fopen(fileName, "w");
