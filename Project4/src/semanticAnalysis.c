@@ -3,6 +3,7 @@
 #include <string.h>
 #include "header.h"
 #include "symbolTable.h"
+#include "macros.h" //TODO
 int g_anyErrorOccur = 0;
 
 DATA_TYPE getBiggerType(DATA_TYPE dataType1, DATA_TYPE dataType2);
@@ -240,18 +241,18 @@ void processDeclarationNode(AST_NODE* declarationNode)
     
     switch(declarationNode->semantic_value.declSemanticValue.kind)
     {
-    case VARIABLE_DECL:
-        declareIdList(declarationNode, VARIABLE_ATTRIBUTE, 0);
-        break;
-    case TYPE_DECL:
-        declareIdList(declarationNode, TYPE_ATTRIBUTE, 0);
-        break;
-    case FUNCTION_DECL:
-        declareFunction(declarationNode);
-        break;
-    case FUNCTION_PARAMETER_DECL:
-        declareIdList(declarationNode, VARIABLE_ATTRIBUTE, 1);
-        break;
+        case VARIABLE_DECL:
+            declareIdList(declarationNode, VARIABLE_ATTRIBUTE, 0);
+            break;
+        case TYPE_DECL:
+            declareIdList(declarationNode, TYPE_ATTRIBUTE, 0);
+            break;
+        case FUNCTION_DECL:
+            declareFunction(declarationNode);
+            break;
+        case FUNCTION_PARAMETER_DECL:
+            declareIdList(declarationNode, VARIABLE_ATTRIBUTE, 1);
+            break;
     }
     return;
 }
@@ -271,12 +272,12 @@ void processTypeNode(AST_NODE* idNodeAsType)
         
         switch(symbolTableEntry->attribute->attr.typeDescriptor->kind)
         {
-        case SCALAR_TYPE_DESCRIPTOR:
-            idNodeAsType->dataType = symbolTableEntry->attribute->attr.typeDescriptor->properties.dataType;
-            break;
-        case ARRAY_TYPE_DESCRIPTOR:
-            idNodeAsType->dataType = symbolTableEntry->attribute->attr.typeDescriptor->properties.arrayProperties.elementType;
-            break;
+            case SCALAR_TYPE_DESCRIPTOR:
+                idNodeAsType->dataType = symbolTableEntry->attribute->attr.typeDescriptor->properties.dataType;
+                break;
+            case ARRAY_TYPE_DESCRIPTOR:
+                idNodeAsType->dataType = symbolTableEntry->attribute->attr.typeDescriptor->properties.arrayProperties.elementType;
+                break;
         }
         //*/
     }
@@ -372,6 +373,7 @@ void declareIdList(AST_NODE* declarationNode, SymbolAttributeKind isVariableOrTy
                 else
                 {
                     attribute->attr.typeDescriptor = typeNode->semantic_value.identifierSemanticValue.symbolTableEntry->attribute->attr.typeDescriptor;
+                    processExprRelatedNode(traverseIDList->child); //TODO
                 }
                 break;
             default:
@@ -763,27 +765,35 @@ void evaluateExprValue(AST_NODE* exprNode)
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue / rightValue;
                 break;
             case BINARY_OP_EQ:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue == rightValue;
                 break;
             case BINARY_OP_GE:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue >= rightValue;
                 break;
             case BINARY_OP_LE:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue <= rightValue;
                 break;
             case BINARY_OP_NE:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue != rightValue;
                 break;
             case BINARY_OP_GT:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue > rightValue;
                 break;
             case BINARY_OP_LT:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue < rightValue;
                 break;
             case BINARY_OP_AND:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue && rightValue;
                 break;
             case BINARY_OP_OR:
+                exprNode->dataType = INT_TYPE;  // TODO
                 exprNode->semantic_value.exprSemanticValue.constEvalValue.fValue = leftValue || rightValue;
                 break;
             default:
@@ -884,6 +894,21 @@ void processExprNode(AST_NODE* exprNode)
             evaluateExprValue(exprNode);
             exprNode->semantic_value.exprSemanticValue.isConstEval = 1;
         }
+
+        switch(getExprOp(exprNode)) {   //TODO whole switch part
+            case BINARY_OP_EQ:
+            case BINARY_OP_GE:
+            case BINARY_OP_LE:
+            case BINARY_OP_NE:
+            case BINARY_OP_GT:
+            case BINARY_OP_LT:
+            case BINARY_OP_AND:
+            case BINARY_OP_OR:
+                exprNode->dataType = INT_TYPE;
+                break;
+            default:
+                break;
+        }
     }
     else
     {
@@ -909,7 +934,6 @@ void processExprNode(AST_NODE* exprNode)
             exprNode->dataType = operand->dataType;
         }
 
-        
         if((exprNode->dataType != ERROR_TYPE) &&
            (operand->nodeType == CONST_VALUE_NODE || (operand->nodeType == EXPR_NODE && operand->semantic_value.exprSemanticValue.isConstEval))
           )
@@ -918,6 +942,13 @@ void processExprNode(AST_NODE* exprNode)
             exprNode->semantic_value.exprSemanticValue.isConstEval = 1;
         }
 
+        switch(getExprOp(exprNode)) {   //TODO whole switch part
+            case UNARY_OP_LOGICAL_NEGATION:
+                exprNode->dataType = INT_TYPE;
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -1223,56 +1254,56 @@ void processGeneralNode(AST_NODE *node)
     AST_NODE *traverseChildren = node->child;
     switch(node->nodeType)
     {
-    case VARIABLE_DECL_LIST_NODE:
-        while(traverseChildren)
-        {
-            processDeclarationNode(traverseChildren);
-            if(traverseChildren->dataType == ERROR_TYPE)
+        case VARIABLE_DECL_LIST_NODE:
+            while(traverseChildren)
             {
-                node->dataType = ERROR_TYPE;
+                processDeclarationNode(traverseChildren);
+                if(traverseChildren->dataType == ERROR_TYPE)
+                {
+                    node->dataType = ERROR_TYPE;
+                }
+                traverseChildren = traverseChildren->rightSibling;
             }
-            traverseChildren = traverseChildren->rightSibling;
-        }
-        break;
-    case STMT_LIST_NODE:
-        while(traverseChildren)
-        {
-            processStmtNode(traverseChildren);
-            if(traverseChildren->dataType == ERROR_TYPE)
+            break;
+        case STMT_LIST_NODE:
+            while(traverseChildren)
             {
-                node->dataType = ERROR_TYPE;
+                processStmtNode(traverseChildren);
+                if(traverseChildren->dataType == ERROR_TYPE)
+                {
+                    node->dataType = ERROR_TYPE;
+                }
+                traverseChildren = traverseChildren->rightSibling;
             }
-            traverseChildren = traverseChildren->rightSibling;
-        }
-        break;
-    case NONEMPTY_ASSIGN_EXPR_LIST_NODE:
-        while(traverseChildren)
-        {
-            checkAssignOrExpr(traverseChildren);
-            if(traverseChildren->dataType == ERROR_TYPE)
+            break;
+        case NONEMPTY_ASSIGN_EXPR_LIST_NODE:
+            while(traverseChildren)
             {
-                node->dataType = ERROR_TYPE;
+                checkAssignOrExpr(traverseChildren);
+                if(traverseChildren->dataType == ERROR_TYPE)
+                {
+                    node->dataType = ERROR_TYPE;
+                }
+                traverseChildren = traverseChildren->rightSibling;
             }
-            traverseChildren = traverseChildren->rightSibling;
-        }
-        break;
-    case NONEMPTY_RELOP_EXPR_LIST_NODE:
-        while(traverseChildren)
-        {
-            processExprRelatedNode(traverseChildren);
-            if(traverseChildren->dataType == ERROR_TYPE)
+            break;
+        case NONEMPTY_RELOP_EXPR_LIST_NODE:
+            while(traverseChildren)
             {
-                node->dataType = ERROR_TYPE;
+                processExprRelatedNode(traverseChildren);
+                if(traverseChildren->dataType == ERROR_TYPE)
+                {
+                    node->dataType = ERROR_TYPE;
+                }
+                traverseChildren = traverseChildren->rightSibling;
             }
-            traverseChildren = traverseChildren->rightSibling;
-        }
-        break;
-    case NUL_NODE:
-        break;
-    default:
-        printf("Unhandle case in void processGeneralNode(AST_NODE *node)\n");
-        node->dataType = ERROR_TYPE;
-        break;
+            break;
+        case NUL_NODE:
+            break;
+        default:
+            printf("Unhandle case in void processGeneralNode(AST_NODE *node)\n");
+            node->dataType = ERROR_TYPE;
+            break;
     }
 }
 

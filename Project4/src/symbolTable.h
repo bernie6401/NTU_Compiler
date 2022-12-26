@@ -62,6 +62,8 @@ typedef struct FunctionSignature
 typedef struct SymbolAttribute
 {
     SymbolAttributeKind attributeKind;
+    int offset; //TODO
+    int global; //TODO
 
     union
     {

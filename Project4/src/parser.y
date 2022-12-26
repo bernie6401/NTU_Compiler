@@ -765,6 +765,9 @@ char *argv[];
      initializeSymbolTable();
 
      semanticAnalysis(prog);
+     /*-----------------------HW4------------------------*/
+     codeGeneration(prog);
+     /*-----------------------HW4------------------------*/
 
      symbolTableEnd();
      if (!g_anyErrorOccur) {
